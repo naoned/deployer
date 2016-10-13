@@ -1,0 +1,30 @@
+{
+    "authors": [
+        {
+            "email": "vbeauvivre@naoned.fr",
+            "name": "Vincent Beauvivre aka Vibby"
+        },
+        {
+            "email": "rgebski@naoned.fr",
+            "name": "Rémi Gebski"
+        }
+    ],
+    "autoload": {
+        "psr-0": {
+            "": "src/"
+        }
+    },
+    "config": {
+        "bin-dir": "bin",
+        "vendor-dir": "vendor/"
+    },
+    "description": "Shared deployer tools and recipes",
+    "homepage": "http://www.mnesys-portail.fr",
+    "license": "©copyright 2016",
+    "name": "naoned/deployer",
+    "require": {
+        "deployer/deployer": "^3.3",
+        "php": ">=5.5.9"
+    },
+    "type": "library"
+}
