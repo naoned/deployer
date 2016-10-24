@@ -1,0 +1,35 @@
+# list servers
+# cf. http://deployer.org/docs/servers, http://deployer.org/recipes/configure
+# -------------
+
+default:
+    #Specifiy stage (example: test, production)
+    stage: production
+    # Delete line below only if deployment server is different to application server (you need to configure host, port, ssh, ...)
+    local: true
+    # Activate ssh connexion comment "local: true" parameter
+    #host: domain.com
+    #user: www
+    #password: pass
+    #port: 22
+    #identity_file: ~
+    # Ssh connexion with identity file
+    #identity_file:
+    #  public_key:  /path/to/public.key
+    #  private_key: /path/to/private.key
+    #  password:    optional-password-for-private-key-or-null
+    #
+    # Path to deploy inao application
+    deploy_path: {{deploy_path}()[/var/naoned/naopal]:Path to deploy the application}
+    # use 'debian' or 'redhat'.
+    os_like: {{os_like}(debian|redhat)[debian]:Operating System type}
+    app:
+        # Apache server name
+        domain: {{app.domain}(*)[]:Domain used to access naopal (without http:// or https://)}
+        # Databse configuration
+        database:
+            host: {{app.database.host}()[127.0.0.1]:mysql database server host}
+            port: {{app.database.port}()[3306]:mysql database server port}
+            name: {{app.database.name}()[naopal]:mysql database name}
+            user: {{app.database.user}()[]:mysql database username}
+            password: {{app.database.passord}()[]:mysql database password}
