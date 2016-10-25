@@ -1,82 +1,42 @@
 <?php
 
 require_once __DIR__ . '/../common/naoned_common.php';
+require_once __DIR__ . '/../common/services.php';
 
 define('DRUSH_PATH', 'vendor/drush/drush/drush.php');
 
-/**
- * Check drush is installed and responding.
- */
-task('drupal:check:drush', function() {
-    $dst       = getDistantPath();
-    $cmd       = sprintf("cd $dst && php %s --version", DRUSH_PATH);
-    $server    = \Deployer\Task\Context::get()->getServer();
-    try {
-        $status = runInContext($server, $cmd);
-    } catch (Exception $e) {
-        writeln(sprintf('<fg=red>✘</fg=red> <fg=red>Could not find drush in %s</fg=red>', DRUSH_PATH));
-        die;
-    }
-})->desc('Check if drush is installed.');
-
-/**
- * Check drupal is bootstrapping and therefore installed.
- */
-task('drupal:check:bootstrap', function() {
-    $dst       = getDistantPath();
-    $statusCmd = sprintf("cd $dst && php %s status", DRUSH_PATH);
-    $server    = \Deployer\Task\Context::get()->getServer();
-    $status    = runInContext($server, $statusCmd);
-
-    if (!preg_match('/Drupal bootstrap\s*:\s*Successful/', $status)) {
-        // Drupal is not bootstraping. Assume it is not installed
-        writeln(sprintf('<fg=red>✘</fg=red> %s', '<fg=red>Drupal is not bootstrapping. Is it installed?</fg=red>'));
-        die;
-    }
+task('drupal:check:bootstrap', function() use ($container) {
+    $container['drupal']->drupalHealthCheck();
 })->desc('Check drupal is bootstrapping and therefore installed.');
 
-/**
- * Check the database is connectable.
- */
-task('drupal:check:database', function() {
-    $dst    = getDistantPath();
-    $cmd    = sprintf("cd $dst && php %s sql-query 'quit'", DRUSH_PATH);
-    $server = \Deployer\Task\Context::get()->getServer();
-    try {
-        $status = runInContext($server, $cmd);
-    } catch (Exception $e) {
-        writeln(sprintf('<fg=red>✘</fg=red> %s', '<fg=red>Can\'t connect to the database</fg=red>'));
-        die;
-    }
+task('drupal:check:database', function() use ($container) {
+    $container['drupal']->databaseHealthCheck();
 })->desc('Check the database is connectable.');
 
-/**
- * Rebuild drupal registry of modules and functions.
- * Just in case we moved or renamed a module.
- */
-task('drupal:registry:rebuild', function() {
-    $server = \Deployer\Task\Context::get()->getServer();
-    $dst    = getDistantPath();
-    $rebuildCmd = sprintf('cd %s && php %2$s cc drush && php %2$s rr', $dst, DRUSH_PATH);
-    runInContext($server, $rebuildCmd);
+task('drupal:registry:rebuild', function() use ($container) {
+    $container['drupal']->databaseRegistryRebuild();
 })->desc('Rebuild drupal registry of modules and functions.');
 
-/**
- * Run drupal database updates.
- */
-task('drupal:database:update', function () {
-    $server    = \Deployer\Task\Context::get()->getServer();
-    $dst       = getDistantPath();
-    $updateCmd = sprintf("cd $dst && php %s updatedb", DRUSH_PATH);
-    runInContext($server, $updateCmd);
+task('drupal:database:update', function () use ($container) {
+    $container['drupal']->databaseUpdate();
 })->desc('Run the database updates.');
 
-/**
- * Update the translations
- */
-task('drupal:translations:update', function () {
-    $server    = \Deployer\Task\Context::get()->getServer();
-    $dst       = getDistantPath();
-    $updateCmd = sprintf("cd $dst && php %1$s l10n-update-refresh && php %1$s l10n-update-refresh --mode=replace", DRUSH_PATH);
-    runInContext($server, $updateCmd);
+task('drupal:translations:update', function () use ($container) {
+    $container['drupal']->translationsUpdate();
 })->desc('Update the translations.');
+
+task('drupal:database:backup', function() use ($container) {
+    $container['drupal']->databaseBackup();
+})->desc('Backups the current database.');
+
+task('drupal:database:rollback', function() use ($container) {
+    $container['drupal']->databaseRollback();
+})->desc('Rolls back the database to the previous release state.');
+
+task('drupal:maintenance:enable', function() use ($container) {
+    $container['drupal']->maintenanceEnable();
+});
+
+task('drupal:maintenance:disable', function() use ($container) {
+    $container['drupal']->maintenanceDisable();
+});

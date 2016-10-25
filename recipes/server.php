@@ -1,17 +1,6 @@
 <?php
 
-use Naoned\Deployer\Recipes\Servers\Debian;
-use Naoned\Deployer\Recipes\Servers\RedHat;
-
-
-$container = new Pimple\Container();
-$container['debian'] = function() {
-    return new Debian;
-};
-$container['redhat'] = function() {
-    return new RedHat;
-};
-
+require_once __DIR__ . '/../common/services.php';
 
 task('server:install:repositories', function() use ($container) {
     $repositories = get('repositories')[env('os_like')];
