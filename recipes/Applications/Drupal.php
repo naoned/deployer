@@ -117,6 +117,16 @@ class Drupal
     public function translationsUpdate()
     {
         writeln('This may take a while...');
+
+        // We make sure the website is configured to fined the translations in the correct place !
+        // Maybe not the best place to do this... but at least we are sure
+        $this->drush->execute('vset', ['l10n_update_default_filename', '%project.%language.po']);
+        $this->drush->execute('vset', ['l10n_update_download_store', 'profiles/naopal/translations']);
+        $this->drush->execute('vset', ['l10n_update_check_mode', 2]); // Force using local translations files
+        $this->drush->execute('cc', ['all']);
+
+        // Todo: Maybe we could also force an update using remote servers? Could be useful.
+
         $refresh = $this->drush->execute('l10n-update-refresh');
         $update  = $this->drush->execute('l10n-update', ['--mode=replace']);
 
