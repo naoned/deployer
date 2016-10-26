@@ -25,7 +25,7 @@ class RedHat
             try {
                 writeln("➤ Installing <info>$name</info> package");
                 run("rpm -Uvh $source");
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $error = $e->getProcess()->getErrorOutput();
                 if (preg_match('/already installed/', $error)) {
                     writeln("<info>✔</info> Package <info>$name</info> already installed");
@@ -52,7 +52,7 @@ class RedHat
 
     public function installDependency($name)
     {
-        writeln("➤ Installing <info>$dep</info>");
+        writeln("➤ Installing <info>$name</info>");
         run("yum install -y $name");
     }
 
@@ -86,7 +86,7 @@ class RedHat
                 // Check if the module is not already listed in the current conf
                 // TODO: Check conf.d dir too
                 $moduleInHttpdConf = run("(cat /etc/httpd/conf/httpd.conf | grep -E $moduleFileName$)")->toString();
-            } catch (Exception $e) {
+            } catch (\Exception $e) {
                 $moduleInHttpdConf = false;
             }
 

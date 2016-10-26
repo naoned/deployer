@@ -15,7 +15,7 @@ class Drush
         // Check drush is alive
         try {
             $status = runInContext($this->server, sprintf("cd %s && php %s --version", $this->rootDir, $this->drushPath));
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             writeln(sprintf('<fg=red>✘</fg=red> <fg=red>Could not find drush in %s</fg=red>', DRUSH_PATH));
 
             if (isVerbose()) {
@@ -43,7 +43,7 @@ class Drush
 
         try {
             $result = run($cmd);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             if (isVerbose()) {
                 throw $e;
             }
