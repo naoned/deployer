@@ -16,10 +16,7 @@ class Drupal
 
     public function drupalHealthCheck()
     {
-        $dst       = $this->rootDir;
-        $statusCmd = sprintf("cd $dst && php %s status", DRUSH_PATH);
-        $server    = \Deployer\Task\Context::get()->getServer();
-        $status    = runInContext($server, $statusCmd);
+        $status    = $this->drush->execute('status');
 
         if (!preg_match('/Drupal bootstrap\s*:\s*Successful/', $status)) {
             // Drupal is not bootstraping. Assume it is not installed
@@ -34,8 +31,6 @@ class Drupal
             writeln(sprintf('<fg=red>✘</fg=red> %s', '<fg=red>Can\'t connect to the database</fg=red>'));
             die;
         }
-
-        writeln(sprintf('<info>✔</info> %s', 'The database is connectable'));
     }
 
     public function databaseBackup()
@@ -52,12 +47,10 @@ class Drupal
 
     public function databaseUpdate()
     {
-        if (!$this->drush->execute('updatedb')) {
+        if (!$this->drush->execute('updatedb', ['-y'])) {
             writeln(sprintf('<fg=red>✘</fg=red> %s', '<fg=red>Could not update the database. Try manually by going to /update.php</fg=red>'));
             die;
         }
-
-        writeln(sprintf('<info>✔</info> %s', 'Database updated'));
     }
 
     public function databaseRollback()
@@ -98,8 +91,6 @@ class Drupal
             writeln(sprintf('<fg=red>✘</fg=red> %s', '<fg=red>Could not rebuild the registry</fg=red>'));
             die;
         }
-
-        writeln(sprintf('<info>✔</info> %s', 'Registry rebuild'));
     }
 
     private function getDatabaseGetBackupName($releaseName)
@@ -113,8 +104,6 @@ class Drupal
             writeln(sprintf('<fg=red>✘</fg=red> %s', '<fg=red>Could not disable the maintenance mode</fg=red>'));
             die;
         }
-
-        writeln(sprintf('<info>✔</info> %s', 'Maintenance mode enabled'));
     }
 
     public function maintenanceDisable()
@@ -123,8 +112,6 @@ class Drupal
             writeln(sprintf('<fg=red>✘</fg=red> %s', '<fg=red>Could not disable the maintenance mode</fg=red>'));
             die;
         }
-
-        writeln(sprintf('<info>✔</info> %s', 'Maintenance mode disabled'));
     }
 
     public function translationsUpdate()

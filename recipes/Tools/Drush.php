@@ -38,7 +38,7 @@ class Drush
         $cmd = sprintf('cd %s && php %s %s %s', $this->rootDir, $this->drushPath, $cmdName, implode(' ', $arguments));
 
         if (isVerbose()) {
-            writeln($cmd);
+            writeln('<info>' . $cmd . '</info>');
         }
 
         try {
@@ -51,9 +51,10 @@ class Drush
             return null;
         }
 
-        // Does not work... Why?
+        // Drush seems to send exit code before output ???
+        // Anyway, this mostly does not work and display empty strings
         // if (isVerbose()) {
-        //     writeln($result->toString());
+        //     writeln($result);
         // }
 
         return $result;
