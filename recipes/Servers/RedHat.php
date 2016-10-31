@@ -26,7 +26,7 @@ class RedHat
                 writeln("➤ Installing <info>$name</info> package");
                 run("rpm -Uvh $source");
             } catch (\Exception $e) {
-                $error = $e->getProcess()->getErrorOutput();
+                $error = $e->getMessage();
                 if (preg_match('/already installed/', $error)) {
                     writeln("<info>✔</info> Package <info>$name</info> already installed");
                 } else {
@@ -61,8 +61,12 @@ class RedHat
         writeln("➤ Installing <info>mysql-server</info>");
         run('yum install -y mysql-server');
         writeln('➤ Starting mysql');
-        run('/sbin/service mysqld start');
-        run('chkconfig httpd on');
+        if ($this->versionNumber >= 7) {
+            run('systemctl start mysqld');
+        } else {
+            run('chkconfig mysqld on');
+            run('/sbin/service mysqld start');
+        }
         writeln('We recommand running <info>mysql_secure_installation</info> to setup a root password.');
     }
 
