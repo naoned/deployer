@@ -37,8 +37,6 @@ task('drupal:database:cleanup', function() use ($container) {
     $container['drupal']->databaseCleanup();
 })->desc('Removes old database backups.');
 
-before('cleanup', 'drupal:database:cleanup');
-
 task('drupal:maintenance:enable', function() use ($container) {
     $container['drupal']->maintenanceEnable();
 });
