@@ -118,7 +118,7 @@ function runInContext($server, $cmd)
     if ($server instanceof \Deployer\Server\Local) {
         return runLocally($cmd);
     } else {
-        return run($statusCmd);
+        return run($cmd);
     }
 }
 
