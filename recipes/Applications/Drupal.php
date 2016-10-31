@@ -45,6 +45,22 @@ class Drupal
         writeln(sprintf('<info>✔</info> %s %s', 'Database backup created', '<info>' . $this->backupDir . '/' . $backupFile . '</info>'));
     }
 
+    public function databaseCleanup()
+    {
+        $keep     = get('keep_releases');
+        $releases = env('releases_list');
+
+        while ($keep > 0) {
+            array_shift($releases);
+            --$keep;
+        }
+
+        foreach ($releases as $release) {
+            $backupFile = $this->getDatabaseGetBackupName($release);
+            run('rm -f ' . $this->backupDir . '/' . $backupFile);
+        }
+    }
+
     public function databaseUpdate()
     {
         if (!$this->drush->execute('updatedb', ['-y'])) {
