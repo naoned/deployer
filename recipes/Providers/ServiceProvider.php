@@ -15,17 +15,19 @@ class ServiceProvider implements ServiceProviderInterface
     {
         $container['drush_path'] = 'vendor/drush/drush/drush.php';
 
-        $container['debian'] = function() {
+        // We use factory because we don't want to share an instance accross multiple servers.
+        // Server configs may differ so it's safer to always start with new instances.
+        $container['debian'] = $container->factory(function() {
             return new Debian();
-        };
-        $container['redhat'] = function() {
+        });
+        $container['redhat'] = $container->factory(function() {
             return new RedHat();
-        };
-        $container['drupal'] = function($c) {
+        });
+        $container['drupal'] = $container->factory(function($c) {
             return new Drupal($c['drush']);
-        };
-        $container['drush'] = function($c) {
+        });
+        $container['drush'] = $container->factory(function($c) {
             return new Drush($c['drush_path']);
-        };
+        });
     }
 }
