@@ -81,4 +81,12 @@ class Debian
         writeln("➤ Restarting apache");
         run('apachectl restart ');
     }
+
+    public function configurePhp($configFile)
+    {
+        $targetLink = '/etc/php5/apache2/conf.d/' . pathinfo($configFile)['basename'];
+
+        run("ln -fs $configFile $targetLink");
+        run("apachectl restart");
+    }
 }

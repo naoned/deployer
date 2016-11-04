@@ -107,4 +107,13 @@ class RedHat
         writeln("➤ Restarting apache");
         run('apachectl restart ');
     }
+
+    public function configurePhp($configFile)
+    {
+        $configDir  = run("php --ini | grep 'Scan for additional' | awk -F': ' '{print $2}'")->toString();
+        $targetLink = $configDir . '/' . pathinfo($configFile)['basename'];
+
+        run("ln -fs $configFile $targetLink");
+        run("apachectl restart");
+    }
 }

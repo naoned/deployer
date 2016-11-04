@@ -27,3 +27,12 @@ task('server:configure:apache', function() use ($container) {
     $config = get('apache_config');
     $container[env('os_like')]->configureApache($config);
 });
+
+task('server:configure:php', function() use ($container) {
+    $config = get('php_config');
+    if (!empty($config)) {
+        $container[env('os_like')]->configurePhp($config);
+    } else {
+        writeln("<fg=red>✘</fg=red> No config file found for PHP.");
+    }
+});
